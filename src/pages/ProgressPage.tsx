@@ -201,6 +201,10 @@ function ProgressPage() {
     const stressLogs = JSON.parse(localStorage.getItem('mindcare_stress_logs') || '[]');
     const videoProgress = JSON.parse(localStorage.getItem('mindcare_video_progress') || '[]');
     const actValues = JSON.parse(localStorage.getItem('mindcare_act_values') || '[]');
+    const artSessions = JSON.parse(localStorage.getItem('mindcare_art_sessions') || '[]');
+    const mindfulnessSessions = JSON.parse(localStorage.getItem('mindcare_mindfulness_sessions') || '[]');
+    const tetrisSessions = JSON.parse(localStorage.getItem('mindcare_tetris_sessions') || '[]');
+    const musicSessions = JSON.parse(localStorage.getItem('mindcare_music_sessions') || '[]');
 
     // Filter data for current user
     const userCBT = cbtRecords.filter((r: any) => r.userId === user?.id || !r.userId);
@@ -210,10 +214,15 @@ function ProgressPage() {
     const userStress = stressLogs.filter((l: any) => l.userId === user?.id || !l.userId);
     const userVideo = videoProgress.filter((p: any) => p.userId === user?.id || !p.userId);
     const userACT = actValues.filter((v: any) => v.userId === user?.id || !v.userId);
+    const userArt = artSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+    const userMindfulness = mindfulnessSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+    const userTetris = tetrisSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+    const userMusic = musicSessions.filter((s: any) => s.userId === user?.id || !s.userId);
 
     // Calculate total therapy sessions from all activities
     const totalActivities = userCBT.length + userGratitude.length + userExposure.length + userStress.length + 
-                           userVideo.length + userACT.length;
+                           userVideo.length + userACT.length + userArt.length + userMindfulness.length + 
+                           userTetris.length + userMusic.length;
     setTotalTherapySessions(totalActivities);
 
     // Define therapy modules with realistic session targets
@@ -229,7 +238,7 @@ function ProgressPage() {
         id: 'mindfulness', 
         name: 'Mindfulness', 
         total: 15,
-        completed: Math.floor(userMood.length * 0.3), // Estimate from mood tracking mindfulness
+        completed: userMindfulness.length,
         description: 'Mindfulness and breathing exercises'
       },
       { 
@@ -250,21 +259,21 @@ function ProgressPage() {
         id: 'music', 
         name: 'Relaxation Music', 
         total: 10,
-        completed: Math.floor(totalActivities * 0.1), // Estimate
+        completed: userMusic.length,
         description: 'Therapeutic music sessions'
       },
       { 
         id: 'tetris', 
         name: 'Tetris Therapy', 
         total: 8,
-        completed: Math.floor(totalActivities * 0.05), // Estimate
+        completed: userTetris.length,
         description: 'Gamified stress relief'
       },
       { 
         id: 'art', 
         name: 'Art Therapy', 
         total: 10,
-        completed: Math.floor(totalActivities * 0.08), // Estimate
+        completed: userArt.length,
         description: 'Creative expression therapy'
       },
       { 

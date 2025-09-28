@@ -83,8 +83,20 @@ function PatientAnalyticsModal({ patient, isOpen, onClose }: PatientAnalyticsMod
     const actValues = JSON.parse(localStorage.getItem('mindcare_act_values') || '[]')
       .filter((value: any) => value.userId === patient.id || (!value.userId && patient.id === '1'));
     
-    const sleepLogs = JSON.parse(localStorage.getItem('mindcare_sleep_logs') || '[]')
-      .filter((log: any) => log.userId === patient.id || (!log.userId && patient.id === '1'));
+    // Load therapy module progress data
+    const therapyProgress = calculatePatientTherapyProgress(patient.id, {
+      moodEntries,
+      cbtRecords,
+      gratitudeEntries,
+      stressLogs,
+      exposureSessions,
+      videoProgress,
+      artSessions,
+      mindfulnessSessions,
+      tetrisSessions,
+      musicSessions,
+      actValues
+    });
 
     setPatientData({
       moodEntries,
@@ -98,10 +110,113 @@ function PatientAnalyticsModal({ patient, isOpen, onClose }: PatientAnalyticsMod
       tetrisSessions,
       musicSessions,
       actValues,
-      sleepLogs
+      therapyProgress
     });
     
     setLoading(false);
+  };
+
+  const calculatePatientTherapyProgress = (patientId: string, data: any) => {
+    // Define therapy modules with their actual completion counts
+    const therapyModules = [
+      { 
+        id: 'cbt', 
+        name: 'CBT Journaling', 
+        total: 20,
+        completed: data.cbtRecords.length,
+        description: 'Cognitive Behavioral Therapy thought records',
+        color: 'from-purple-500 to-pink-500'
+      },
+      { 
+        id: 'mindfulness', 
+        name: 'Mindfulness', 
+        total: 15,
+        completed: data.mindfulnessSessions.length,
+        description: 'Mindfulness and breathing exercises',
+        color: 'from-blue-500 to-cyan-500'
+      },
+      { 
+        id: 'stress', 
+        name: 'Stress Management', 
+        total: 12,
+        completed: data.stressLogs.length,
+        description: 'Stress reduction and coping strategies',
+        color: 'from-orange-500 to-red-500'
+      },
+      { 
+        id: 'gratitude', 
+        name: 'Gratitude Journal', 
+        total: 30,
+        completed: data.gratitudeEntries.length,
+        description: 'Daily gratitude practice',
+        color: 'from-green-500 to-teal-500'
+      },
+      { 
+        id: 'music', 
+        name: 'Relaxation Music', 
+        total: 10,
+        completed: data.musicSessions.length,
+        description: 'Therapeutic music sessions',
+        color: 'from-purple-500 to-blue-500'
+      },
+      { 
+        id: 'tetris', 
+        name: 'Tetris Therapy', 
+        total: 8,
+        completed: data.tetrisSessions.length,
+        description: 'Gamified stress relief',
+        color: 'from-cyan-500 to-blue-500'
+      },
+      { 
+        id: 'art', 
+        name: 'Art Therapy', 
+        total: 10,
+        completed: data.artSessions.length,
+        description: 'Creative expression therapy',
+        color: 'from-pink-500 to-purple-500'
+      },
+      { 
+        id: 'exposure', 
+        name: 'Exposure Therapy', 
+        total: 12,
+        completed: data.exposureSessions.length,
+        description: 'Gradual exposure techniques',
+        color: 'from-orange-500 to-red-500'
+      },
+      { 
+        id: 'video', 
+        name: 'Video Therapy', 
+        total: 16,
+        completed: data.videoProgress.length,
+        description: 'Professional video sessions',
+        color: 'from-blue-500 to-indigo-500'
+      },
+      { 
+        id: 'act', 
+        name: 'ACT', 
+        total: 14,
+        completed: data.actValues.length,
+        description: 'Acceptance and Commitment Therapy',
+        color: 'from-teal-500 to-cyan-500'
+      },
+      { 
+        id: 'mood', 
+        name: 'Mood Tracking', 
+        total: 30,
+        completed: data.moodEntries.length,
+        description: 'Daily mood monitoring',
+        color: 'from-pink-500 to-rose-500'
+      }
+    ];
+
+    return therapyModules.map(module => ({
+      module: module.name,
+      completed: Math.min(module.completed, module.total),
+      total: module.total,
+      progress: Math.round((Math.min(module.completed, module.total) / module.total) * 100),
+      color: module.color,
+      description: module.description
+    }));
   };
 
   const filterDataByTimeframe = (data: any[], timeframe: string) => {
@@ -718,15 +833,7 @@ function PatientAnalyticsModal({ patient, isOpen, onClose }: PatientAnalyticsMod
                 Therapy Module Progress
               </h3>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {patientData && [
-                  { name: 'Mood Tracking', count: patientData.moodEntries.length, target: 30, icon: Heart, color: 'from-pink-500 to-rose-500' },
-                  { name: 'CBT Journaling', count: patientData.cbtRecords.length, target: 20, icon: Brain, color: 'from-blue-500 to-cyan-500' },
-                  { name: 'Gratitude Practice', count: patientData.gratitudeEntries.length, target: 30, icon: Star, color: 'from-yellow-500 to-orange-500' },
-                  { name: 'Stress Management', count: patientData.stressLogs.length, target: 15, icon: Target, color: 'from-orange-500 to-red-500' },
-                  { name: 'Exposure Therapy', count: patientData.exposureSessions.length, target: 12, icon: Award, color: 'from-red-500 to-pink-500' },
-                  { name: 'Video Therapy', count: patientData.videoProgress.length, target: 16, icon: BarChart3, color: 'from-purple-500 to-pink-500' }
-                ].map((module, index) => {
-                  const progress = Math.min(100, (module.count / module.target) * 100);
+                {patientData?.therapyProgress && patientData.therapyProgress.map((module: any, index: number) => {
                   return (
                     <motion.div
                       key={index}
@@ -740,18 +847,18 @@ function PatientAnalyticsModal({ patient, isOpen, onClose }: PatientAnalyticsMod
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-2">
                           <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${module.color} flex items-center justify-center`}>
-                            <module.icon className="w-4 h-4 text-white" />
+                            <Heart className="w-4 h-4 text-white" />
                           </div>
                           <h4 className={`font-medium ${
                             theme === 'dark' ? 'text-white' : 'text-gray-800'
                           }`}>
-                            {module.name}
+                            {module.module}
                           </h4>
                         </div>
                         <span className={`text-sm ${
                           theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                         }`}>
-                          {module.count}/{module.target}
+                          {module.completed}/{module.total}
                         </span>
                       </div>
                       <div className={`w-full h-2 rounded-full ${
@@ -759,16 +866,16 @@ function PatientAnalyticsModal({ patient, isOpen, onClose }: PatientAnalyticsMod
                       }`}>
                         <div
                           className={`h-full rounded-full bg-gradient-to-r ${module.color} transition-all duration-500`}
-                          style={{ width: `${progress}%` }}
+                          style={{ width: `${module.progress}%` }}
                         />
                       </div>
                       <div className="flex justify-between items-center mt-2">
                         <span className={`text-xs ${
                           theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                         }`}>
-                          {progress.toFixed(1)}% complete
+                          {module.progress}% complete
                         </span>
-                        {progress === 100 && (
+                        {module.progress === 100 && (
                           <div className="flex items-center space-x-1 text-green-500">
                             <Award className="w-3 h-3" />
                             <span className="text-xs font-medium">Completed</span>
