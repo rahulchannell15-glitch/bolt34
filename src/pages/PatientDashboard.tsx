@@ -31,6 +31,46 @@ function PatientDashboard() {
       const progress = JSON.parse(userProgress);
       const completedCount = progress.completedTherapies?.length || 0;
       setModulesCompleted(completedCount);
+    } else {
+      // Calculate from actual therapy activities if no progress data
+      const cbtRecords = JSON.parse(localStorage.getItem('mindcare_cbt_records') || '[]');
+      const gratitudeEntries = JSON.parse(localStorage.getItem('mindcare_gratitude_entries') || '[]');
+      const stressLogs = JSON.parse(localStorage.getItem('mindcare_stress_logs') || '[]');
+      const exposureSessions = JSON.parse(localStorage.getItem('mindcare_exposure_sessions') || '[]');
+      const videoProgress = JSON.parse(localStorage.getItem('mindcare_video_progress') || '[]');
+      const artSessions = JSON.parse(localStorage.getItem('mindcare_art_sessions') || '[]');
+      const mindfulnessSessions = JSON.parse(localStorage.getItem('mindcare_mindfulness_sessions') || '[]');
+      const tetrisSessions = JSON.parse(localStorage.getItem('mindcare_tetris_sessions') || '[]');
+      const musicSessions = JSON.parse(localStorage.getItem('mindcare_music_sessions') || '[]');
+      const actValues = JSON.parse(localStorage.getItem('mindcare_act_values') || '[]');
+      
+      // Filter for current user
+      const userCBT = cbtRecords.filter((r: any) => r.userId === user?.id || !r.userId);
+      const userGratitude = gratitudeEntries.filter((e: any) => e.userId === user?.id || !e.userId);
+      const userStress = stressLogs.filter((l: any) => l.userId === user?.id || !l.userId);
+      const userExposure = exposureSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+      const userVideo = videoProgress.filter((p: any) => p.userId === user?.id || !p.userId);
+      const userArt = artSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+      const userMindfulness = mindfulnessSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+      const userTetris = tetrisSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+      const userMusic = musicSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+      const userACT = actValues.filter((v: any) => v.userId === user?.id || !v.userId);
+      
+      // Count unique modules with activity
+      const moduleCount = [
+        userCBT.length > 0 ? 1 : 0,
+        userGratitude.length > 0 ? 1 : 0,
+        userStress.length > 0 ? 1 : 0,
+        userExposure.length > 0 ? 1 : 0,
+        userVideo.length > 0 ? 1 : 0,
+        userArt.length > 0 ? 1 : 0,
+        userMindfulness.length > 0 ? 1 : 0,
+        userTetris.length > 0 ? 1 : 0,
+        userMusic.length > 0 ? 1 : 0,
+        userACT.length > 0 ? 1 : 0
+      ].reduce((sum, val) => sum + val, 0);
+      
+      setModulesCompleted(moduleCount);
     }
     
     // Load upcoming appointments
@@ -73,6 +113,46 @@ function PatientDashboard() {
         const progress = JSON.parse(userProgress);
         const completedCount = progress.completedTherapies?.length || 0;
         setModulesCompleted(completedCount);
+      } else {
+        // Calculate from actual therapy activities if no progress data
+        const cbtRecords = JSON.parse(localStorage.getItem('mindcare_cbt_records') || '[]');
+        const gratitudeEntries = JSON.parse(localStorage.getItem('mindcare_gratitude_entries') || '[]');
+        const stressLogs = JSON.parse(localStorage.getItem('mindcare_stress_logs') || '[]');
+        const exposureSessions = JSON.parse(localStorage.getItem('mindcare_exposure_sessions') || '[]');
+        const videoProgress = JSON.parse(localStorage.getItem('mindcare_video_progress') || '[]');
+        const artSessions = JSON.parse(localStorage.getItem('mindcare_art_sessions') || '[]');
+        const mindfulnessSessions = JSON.parse(localStorage.getItem('mindcare_mindfulness_sessions') || '[]');
+        const tetrisSessions = JSON.parse(localStorage.getItem('mindcare_tetris_sessions') || '[]');
+        const musicSessions = JSON.parse(localStorage.getItem('mindcare_music_sessions') || '[]');
+        const actValues = JSON.parse(localStorage.getItem('mindcare_act_values') || '[]');
+        
+        // Filter for current user
+        const userCBT = cbtRecords.filter((r: any) => r.userId === user?.id || !r.userId);
+        const userGratitude = gratitudeEntries.filter((e: any) => e.userId === user?.id || !e.userId);
+        const userStress = stressLogs.filter((l: any) => l.userId === user?.id || !l.userId);
+        const userExposure = exposureSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+        const userVideo = videoProgress.filter((p: any) => p.userId === user?.id || !p.userId);
+        const userArt = artSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+        const userMindfulness = mindfulnessSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+        const userTetris = tetrisSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+        const userMusic = musicSessions.filter((s: any) => s.userId === user?.id || !s.userId);
+        const userACT = actValues.filter((v: any) => v.userId === user?.id || !v.userId);
+        
+        // Count unique modules with activity
+        const moduleCount = [
+          userCBT.length > 0 ? 1 : 0,
+          userGratitude.length > 0 ? 1 : 0,
+          userStress.length > 0 ? 1 : 0,
+          userExposure.length > 0 ? 1 : 0,
+          userVideo.length > 0 ? 1 : 0,
+          userArt.length > 0 ? 1 : 0,
+          userMindfulness.length > 0 ? 1 : 0,
+          userTetris.length > 0 ? 1 : 0,
+          userMusic.length > 0 ? 1 : 0,
+          userACT.length > 0 ? 1 : 0
+        ].reduce((sum, val) => sum + val, 0);
+        
+        setModulesCompleted(moduleCount);
       }
 
       // Update appointments

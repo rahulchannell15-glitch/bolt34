@@ -165,7 +165,7 @@ function MindfulnessModule() {
       userId: user?.id,
       date: new Date().toISOString().split('T')[0],
       sessionType: currentSession?.name || 'Breathing Exercise',
-      duration: sessionTime,
+      duration: sessionTime || 300,
       completed: true
     };
     mindfulnessSessions.push(newSession);

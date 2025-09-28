@@ -320,6 +320,8 @@ function PatientAnalyticsModal({ patient, isOpen, onClose }: PatientAnalyticsMod
   const exportPatientData = () => {
     if (!patientData) return;
 
+    const progressData = generateOverallProgressData();
+
     const exportData = {
       patient: {
         name: patient.name,
@@ -329,10 +331,11 @@ function PatientAnalyticsModal({ patient, isOpen, onClose }: PatientAnalyticsMod
       exportDate: new Date().toISOString(),
       timeframe: selectedTimeframe,
       summary: {
-        totalActivities: Object.values(patientData).reduce((sum, activities) => 
-          sum + (Array.isArray(activities) ? activities.length : 0), 0
-        ),
-        overallProgress: calculateOverallProgress(),
+        totalActivities: progressData.totalActivities,
+        overallProgress: progressData.overallProgress,
+        moduleTypes: progressData.moduleTypes,
+        diversityScore: progressData.diversityScore,
+        activityScore: progressData.activityScore,
         currentMood: patientData.moodEntries.length > 0 
           ? patientData.moodEntries[patientData.moodEntries.length - 1].moodIntensity / 2 
           : 'No data',
@@ -340,7 +343,7 @@ function PatientAnalyticsModal({ patient, isOpen, onClose }: PatientAnalyticsMod
       },
       detailedData: patientData,
       moodTrends: generateMoodTrendData(),
-      activityBreakdown: generateActivityData(),
+      therapyProgress: patientData.therapyProgress,
       moodDistribution: generateMoodDistribution()
     };
 

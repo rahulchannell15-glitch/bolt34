@@ -713,6 +713,19 @@ function RelaxationMusicModule() {
                  // Dispatch custom event for real-time updates
                  window.dispatchEvent(new CustomEvent('mindcare-data-updated'));
                  
+                 // Save music session completion
+                 const musicSessions = JSON.parse(localStorage.getItem('mindcare_music_sessions') || '[]');
+                 const newSession = {
+                   id: Date.now().toString(),
+                   userId: user?.id,
+                   date: new Date().toISOString().split('T')[0],
+                   duration: minutes * 60,
+                   sessionType: 'Relaxation Timer',
+                   completed: true
+                 };
+                 musicSessions.push(newSession);
+                 localStorage.setItem('mindcare_music_sessions', JSON.stringify(musicSessions));
+                 
                  toast.success(`${minutes}-minute session started`);
                }}
                 className="p-3 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-lg hover:from-teal-600 hover:to-blue-600 transition-all duration-300 text-sm font-medium"
